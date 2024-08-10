@@ -61,26 +61,6 @@ public interface IMyStrategy2 : IStrategy{}
 ```
 
 ```csharp
-public class ExecuteStrategies : IExecuteStrategies  
-{  
-    private readonly Dictionary<string, IStrategy> _strategies = new();  
-  
-    public FeatureManagerService(IMyStrategy2 myStrategy2)  
-    {        
-	    _strategies.Add("myType", myStrategy2);  
-    }  
-    public async Task ExecuteAsync(UserInput input)  
-    {    
-	     await _strategies[input.Type].ExecuteAsync(input);  
-    } 
-}
-public interface IExecuteStrategies  
-{  
-    Task Handle(UserInput input);
-}
-```
-
-```csharp
 public class UserInput  
 {  
     public string Type { get; set; } = default!;  
