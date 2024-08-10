@@ -13,5 +13,6 @@ Cada PoC é uma peça única de aprendizado e descoberta, focada em áreas como 
 Sinta-se à vontade para explorar, aprender e, quem sabe, até contribuir com suas próprias ideias!
 
 
-**leonardo :)**
+*leonardo :)*
+
 *Que a Força esteja com você*
