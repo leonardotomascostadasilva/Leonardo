@@ -2,7 +2,7 @@
 title: Meu Digital Garden
 ---
 
-<img src="./banner.webp" width="701" height="183">
+<img src="./banner.jpg" width="701" height="183">
 
 
 **Bem-vindo!**
