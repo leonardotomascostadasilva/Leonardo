@@ -2,9 +2,6 @@
 title: Meu Digital Garden
 ---
 
-<img src="./banner.jpg" width="701" height="183">
-
-
 **Bem-vindo!**
 
 
@@ -17,3 +14,4 @@ Sinta-se à vontade para explorar, aprender e, quem sabe, até contribuir com su
 
 
 **leonardo :)**
+*Que a Força esteja com você*
