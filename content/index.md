@@ -1,5 +1,8 @@
 ---
 title: Meu Digital Garden
+tags:
+  - PoCs
+  - Patterns
 ---
 
 **Bem-vindo!**
