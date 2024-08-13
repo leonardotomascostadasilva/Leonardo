@@ -134,7 +134,7 @@ namespace PoC_PipelineBehavior.PipelinesBehavior
 ```
 
 #### LoggingBehavior
-Este comportamento registra logs antes e depois de uma requisição ser processada, capturando tanto a requisição quanto a resposta. Isso ajuda a monitorar e rastrear o fluxo de dados na aplicação.
+Este comportamento registra logs antes de uma requisição ser processada, capturando tanto a requisição quanto a resposta. Isso ajuda a monitorar e rastrear o fluxo de dados na aplicação.
 
 ```csharp
 using MediatR;
