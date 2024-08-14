@@ -1,8 +1,5 @@
 ---
 title: Meu Digital Garden
-tags:
-  - PoCs
-  - Patterns
 ---
 
 **Bem-vindo!**
@@ -15,6 +12,10 @@ Cada PoC é uma peça única de aprendizado e descoberta, focada em áreas como 
 
 Sinta-se à vontade para explorar, aprender e, quem sabe, até contribuir com suas próprias ideias!
 
+- [[PoCs/PoC-IntegrationTests|PoC-IntegrationTests]]
+- [[PoCs/PoC-PipelineBehavior|PoC-PipelineBehavior]]
+- [[PoCs/PoC-Result|PoC-Result]]
+- [[Patterns/Strategy|Strategy]]
 
 *leonardo :)*
 
