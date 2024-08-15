@@ -12,9 +12,12 @@ Cada PoC é uma peça única de aprendizado e descoberta, focada em áreas como 
 
 Sinta-se à vontade para explorar, aprender e, quem sabe, até contribuir com suas próprias ideias!
 
+## PoC
 - [[PoCs/PoC-IntegrationTests|PoC-IntegrationTests]]
 - [[PoCs/PoC-PipelineBehavior|PoC-PipelineBehavior]]
 - [[PoCs/PoC-Result|PoC-Result]]
+- [[PoCs/PoC-Builder|PoC-Builder]]
+## Pattern
 - [[Patterns/Strategy|Strategy]]
 
 *leonardo :)*
