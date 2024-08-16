@@ -17,6 +17,7 @@ Sinta-se à vontade para explorar, aprender e, quem sabe, até contribuir com su
 - [[PoCs/PoC-PipelineBehavior|PoC-PipelineBehavior]]
 - [[PoCs/PoC-Result|PoC-Result]]
 - [[PoCs/PoC-Builder|PoC-Builder]]
+- [[PoCs/PoC-Channels|PoC-Channels]]
 ## Pattern
 - [[Patterns/Strategy|Strategy]]
 
