@@ -20,6 +20,7 @@ Sinta-se à vontade para explorar, aprender e, quem sabe, até contribuir com su
 - [[PoCs/PoC-Channels|PoC-Channels]]
 - [[PoCs/PoC-Resilience|PoC-Resilience]]
 - [[PoCs/Poc-ThreadPool|Poc-ThreadPool]]
+- [[PoCs/PoC-Middleware|PoC-Middleware]]
 ## Pattern
 - [[Patterns/Strategy|Strategy]]
 
