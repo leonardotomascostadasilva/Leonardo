@@ -3,10 +3,6 @@ title: "Resiliência em APIs com Polly no ASP.NET Core: Uma Abordagem Prática"
 tags:
   - PoCs
 ---
-
-
-No desenvolvimento de APIs, a resiliência é um aspecto crucial para garantir que sua aplicação continue a funcionar de maneira confiável, mesmo diante de falhas temporárias em serviços externos. Uma maneira eficaz de implementar resiliência é utilizando a biblioteca [[Resiliencia/Polly|Polly]], que fornece políticas de resiliência como retries, circuit breakers, timeouts, entre outras. Neste post, vou te mostrar como configurar e utilizar o [[Resiliencia/Polly|Polly]] em uma API ASP.NET Core, com foco em retries e timeouts, garantindo que sua aplicação seja robusta e preparada para lidar com falhas.
-
 ## Configurando a API ASP.NET Core com Polly
 Vamos começar configurando uma aplicação ASP.NET Core simples que usa [[Resiliencia/Polly|Polly]] para adicionar resiliência ao consumir um serviço externo. Aqui está o código de configuração:
 
