@@ -3,104 +3,61 @@ title: "Configurando Serviços Externos com Polly e Refit"
 tags:
   - resiliência
 ---
-No desenvolvimento de APIs, a resiliência é um aspecto crucial para garantir que sua aplicação continue a funcionar de maneira confiável, mesmo diante de falhas temporárias em serviços externos. Uma maneira eficaz de implementar resiliência é utilizando a biblioteca [[Resiliencia/Polly|Polly]], que fornece políticas de resiliência como retries, circuit breakers, timeouts, entre outras. Neste post, vou te mostrar como configurar e utilizar o [[Resiliencia/Polly|Polly]] em uma API ASP.NET Core, com foco em retries, timeouts e circuit breaker, garantindo que sua aplicação seja robusta e preparada para lidar com falhas.
+Resiliência em sistemas distribuídos é um dos pilares mais importantes para garantir que uma aplicação seja capaz de lidar com falhas temporárias e outros tipos de erros de forma eficaz. No contexto de aplicações web modernas, especialmente aquelas que dependem de APIs externas, é essencial implementar políticas de resiliência que ajudem a mitigar os impactos de falhas intermitentes, garantindo assim uma experiência mais estável e confiável para os usuários.
 
-## Criando a Estrutura de Configuração
-Para centralizar as configurações necessárias para a resiliência de serviços externos, criamos a classe `ExternalServices`. Esta classe encapsula as informações de URL, Token, e as configurações específicas de resiliência, permitindo uma configuração flexível e reutilizável:
+## O que é resiliência em sistemas?
+Resiliência é a capacidade de um sistema continuar operando corretamente em caso de falhas parciais. Isso pode incluir falhas de rede, indisponibilidade temporária de serviços externos, ou mesmo erros que acontecem de forma intermitente. A ideia é que o sistema consiga se recuperar ou, ao menos, degradar graciosamente para não afetar de forma significativa a experiência do usuário.
+
+Existem várias abordagens para implementar resiliência, como Retry, Timeout, Circuit Breaker, Bulkhead Isolation, entre outras. Cada uma dessas estratégias tem um papel específico e pode ser combinada com outras para criar um mecanismo robusto contra falhas.
+
+## Aplicando resiliência no ASP.NET Core com Polly e Refit
+
+No ASP.NET Core, Polly é uma biblioteca popular que facilita a implementação de políticas de resiliência. Junto com Refit, uma biblioteca que simplifica o consumo de APIs RESTful, é possível criar uma configuração poderosa para lidar com falhas de comunicação.
+
+Vamos explorar cada uma das políticas de resiliência e como elas podem ser configuradas:
+
+### Retry
+A política de Retry tenta executar a operação novamente um determinado número de vezes antes de falhar definitivamente. É ideal para falhas transitórias, como problemas temporários de rede.
+
+Exemplo de código:
+```csharp
+var retryPolicy = Policy
+    .Handle<HttpRequestException>()
+    .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+```
+### Timeout
+Timeout define um tempo limite para a execução de uma operação. Se o tempo for excedido, a operação é cancelada.
+
+Exemplo de código:
 
 ```csharp
-public class ExternalServices
-{
-    public string Url { get; set; } = string.Empty;
-
-    public string Token { get; set; } = string.Empty;
-
-    public Resilience Resilience { get; set; } = default!;
-}
-
-public class Resilience
-{
-    public int TimeoutInSeconds { get; set; }
-
-    public int NumberOfRetrys { get; set; }
-
-    public int HandledEventsAllowedBeforeBreaking { get; set; }
-
-    public int DurationOfBreakInMinutes { get; set; }
-}
+var timeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(10));
 ```
+### Circuit Breaker
+Circuit Breaker impede que o sistema continue a tentar executar operações que provavelmente falharão, baseado em um histórico recente de falhas. Isso permite que o sistema evite sobrecarregar um serviço que está claramente com problemas, com isso é possível gerar uma possibilidade do sistema conseguir se recuperar.
 
-## Configurando o Serviço Externo com Refit e Polly
-Vamos agora integrar essa configuração em uma aplicação ASP.NET Core. Usaremos Refit para consumir o serviço externo e Polly para adicionar políticas de resiliência. O código a seguir ilustra essa configuração:
-
+Exemplo de código:
 ```csharp
-public static class ExternalServicesExtensions
-{
-    public static IServiceCollection AddExternalService<TRefit>(this IServiceCollection services, string externalService, IConfiguration configuration) 
-        where TRefit : class
-    {
-        var externalServices = new ExternalServices();
-        configuration.GetSection($"ExternalServices:{externalService}").Bind(externalServices);
-
-        services
-            .AddRefitClient<TRefit>()
-            .ConfigureHttpClient(c => c.BaseAddress = new Uri(externalServices.Url))
-            .AddPolicyHandler(ResilienceExtensions.AddCircuitBreakerPolicy(externalServices.Resilience.HandledEventsAllowedBeforeBreaking, externalServices.Resilience.DurationOfBreakInMinutes, externalServices.Url))
-            .AddPolicyHandler(ResilienceExtensions.AddRetryPolicy(externalServices.Resilience.NumberOfRetrys, externalServices.Url))
-            .AddPolicyHandler(ResilienceExtensions.AddTimeoutPolicy(externalServices.Resilience.TimeoutInSeconds));
-
-        return services;
-    }
-}
+var circuitBreakerPolicy = Policy
+    .Handle<HttpRequestException>()
+    .CircuitBreakerAsync(
+        handledEventsAllowedBeforeBreaking: 5,
+        durationOfBreak: TimeSpan.FromMinutes(1)
+    );
 ```
+## Integrando Polly e Refit
+A integração do Polly com Refit é bastante direta. Podemos aplicar as políticas que definimos ao configurar o HttpClient usado pelo Refit.
 
-Aqui, o método `AddExternalService<TRefit>` é uma extensão que facilita a configuração de serviços externos. Ele permite definir políticas de resiliência específicas para cada serviço, simplificando a reutilização de código e a manutenção das configurações.
-
-## Configurando Políticas de Resiliência
-Agora, vamos detalhar como essas políticas de resiliência são configuradas utilizando Polly. Elas garantem que sua aplicação possa lidar melhor com falhas transitórias e problemas na comunicação com serviços externos.
-
+Exemplo de código:
 ```csharp
-public static class ResilienceExtensions
-{
-    public static AsyncRetryPolicy<HttpResponseMessage> AddRetryPolicy(int numberOfRetrys, string url)
-        => HttpPolicyExtensions
-            .HandleTransientHttpError()
-            .OrInner<TimeoutRejectedException>()
-            .WaitAndRetryAsync(numberOfRetrys,
-                retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                onRetry: (response, delay, retryCount, context) =>
-                {
-                    Log.Information("[Retry Policy] {RetryCount} - ({Url}) - {Message} - {PolicyKey}", retryCount, url, response.Exception?.Message, context.PolicyKey);
-                });
-
-    public static AsyncTimeoutPolicy<HttpResponseMessage> AddTimeoutPolicy(int timeoutInSeconds)
-        => Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(timeoutInSeconds));
-
-    public static AsyncCircuitBreakerPolicy<HttpResponseMessage> AddCircuitBreakerPolicy(int handledEventsAllowedBeforeBreaking, int durationOfBreakInMinutes, string url)
-        => HttpPolicyExtensions
-            .HandleTransientHttpError()
-            .OrInner<TimeoutRejectedException>()
-            .CircuitBreakerAsync(handledEventsAllowedBeforeBreaking, TimeSpan.FromMinutes(durationOfBreakInMinutes),
-                onBreak: (exception, duration) =>
-                {
-                    Log.Information("[Circuit Breaker Policy] ({Url}) On break ->  Duration:{Duration} - Exception: {Exception}", url, duration.TotalMinutes, exception?.Result?.RequestMessage);
-                },
-                onReset: () =>
-                {
-                    Log.Information("[Circuit Breaker Policy] Circuit breaker reset. ({Url})", url);
-                },
-                onHalfOpen: () =>
-                {
-                    Log.Information("[Circuit Breaker Policy] Circuit breaker is in half-open state. ({Url})", url);
-                });
-}
+services.AddRefitClient<IExternalApi>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://api.exemplo.com"))
+    .AddPolicyHandler(timeoutPolicy)
+    .AddPolicyHandler(retryPolicy)
+    .AddPolicyHandler(circuitBreakerPolicy);
 ```
-Neste código, estamos configurando três políticas principais:
 
-- **Retry Policy**: Implementa uma política de retry com backoff exponencial, registrando as tentativas de retry nos logs. Isso é crucial para lidar com falhas transitórias de rede ou de serviço.
-- **Timeout Policy**: Define um tempo limite para a operação HTTP, evitando que as requisições fiquem pendentes indefinidamente. Essa política garante que o tempo de resposta seja previsível.
-- **Circuit Breaker Policy**: Configura um circuito de proteção que abre após um número específico de falhas consecutivas. Isso evita que o serviço seja sobrecarregado por tentativas repetidas e falhas em cascata.
+Aqui, as políticas de Retry, Timeout, e Circuit Breaker são aplicadas na ordem especificada. Isso significa que, primeiro, a política de Timeout será avaliada. Se o tempo limite for excedido, a operação falha sem tentar novamente. Em seguida, a política de Retry será tentada em caso de exceções transitórias, e, finalmente, a política de Circuit Breaker pode interromper as tentativas se houver muitas falhas consecutivas.
 
-Essas políticas, quando combinadas, aumentam significativamente a robustez e a resiliência da sua aplicação, tornando-a mais preparada para lidar com instabilidades e falhas transitórias ao consumir serviços externos.
-
-Se você quiser saber mais sobre o tema de resiliência, confira o tópico [[PoCs/PoC-Resilience]].
+## Considerações Finais
+Ao implementar políticas de resiliência em suas aplicações, é crucial entender o comportamento de cada uma e como elas interagem entre si. Testar essas políticas em um ambiente controlado e monitorar seu impacto é igualmente importante para garantir que elas realmente tragam benefícios ao seu sistema.
