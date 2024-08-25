@@ -3,7 +3,7 @@ title: "Configurando Serviços Externos com Polly e Refit"
 tags:
   - resiliência
 ---
-No desenvolvimento de APIs, a resiliência é um aspecto crucial para garantir que sua aplicação continue a funcionar de maneira confiável, mesmo diante de falhas temporárias em serviços externos. Uma maneira eficaz de implementar resiliência é utilizando a biblioteca [[Resiliencia/Polly|Polly]], que fornece políticas de resiliência como retries, circuit breakers, timeouts, entre outras. Neste post, vou te mostrar como configurar e utilizar o [[Resiliencia/Polly|Polly]] em uma API ASP.NET Core, com foco em retries e timeouts, garantindo que sua aplicação seja robusta e preparada para lidar com falhas.
+No desenvolvimento de APIs, a resiliência é um aspecto crucial para garantir que sua aplicação continue a funcionar de maneira confiável, mesmo diante de falhas temporárias em serviços externos. Uma maneira eficaz de implementar resiliência é utilizando a biblioteca [[Resiliencia/Polly|Polly]], que fornece políticas de resiliência como retries, circuit breakers, timeouts, entre outras. Neste post, vou te mostrar como configurar e utilizar o [[Resiliencia/Polly|Polly]] em uma API ASP.NET Core, com foco em retries, timeouts e circuit breaker, garantindo que sua aplicação seja robusta e preparada para lidar com falhas.
 
 ## Criando a Estrutura de Configuração
 Para centralizar as configurações necessárias para a resiliência de serviços externos, criamos a classe `ExternalServices`. Esta classe encapsula as informações de URL, Token, e as configurações específicas de resiliência, permitindo uma configuração flexível e reutilizável:
