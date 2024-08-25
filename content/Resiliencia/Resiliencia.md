@@ -52,12 +52,17 @@ Exemplo de código:
 ```csharp
 services.AddRefitClient<IExternalApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://api.exemplo.com"))
-    .AddPolicyHandler(timeoutPolicy)
-    .AddPolicyHandler(retryPolicy)
-    .AddPolicyHandler(circuitBreakerPolicy);
+    .AddPolicyHandler(circuitBreakerPolicy)  
+    .AddPolicyHandler(retryPolicy)        
+    .AddPolicyHandler(timeoutPolicy);       
 ```
+Neste exemplo, as políticas são aplicadas na seguinte ordem:
 
-Aqui, as políticas de Retry, Timeout, e Circuit Breaker são aplicadas na ordem especificada. Isso significa que, primeiro, a política de Timeout será avaliada. Se o tempo limite for excedido, a operação falha sem tentar novamente. Em seguida, a política de Retry será tentada em caso de exceções transitórias, e, finalmente, a política de Circuit Breaker pode interromper as tentativas se houver muitas falhas consecutivas.
+- **Circuit Breaker**: Aplica-se primeiro para interromper chamadas em caso de falhas consecutivas, prevenindo sobrecarga em serviços com problemas.
+- **Retry**: Aplica-se após o Circuit Breaker, para tentar novas tentativas em caso de falhas transitórias, desde que o Circuit Breaker permita.
+- **Timeout**: Aplica-se por último, definindo um limite de tempo para a operação. Se o tempo limite for excedido, a operação falha sem tentar novamente.
+
+Assim, o Circuit Breaker decide se novas tentativas são permitidas, o Retry tenta novas tentativas conforme necessário, e o Timeout garante que a operação não exceda o tempo máximo permitido
 
 ## Considerações Finais
 Ao implementar políticas de resiliência em suas aplicações, é crucial entender o comportamento de cada uma e como elas interagem entre si. Testar essas políticas em um ambiente controlado e monitorar seu impacto é igualmente importante para garantir que elas realmente tragam benefícios ao seu sistema.
