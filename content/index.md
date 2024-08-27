@@ -22,6 +22,7 @@ Sinta-se à vontade para explorar, aprender e, quem sabe, até contribuir com su
 - [[PoCs/Poc-ThreadPool|Poc-ThreadPool]]
 - [[PoCs/PoC-Middleware|PoC-Middleware]]
 - [[PoCs/PoC-OptionsPattern|PoC-OptionsPattern]]
+- [[PoCs/PoC-RouteGroups|PoC-RouteGroups]]
 ## Pattern
 - [[Patterns/Strategy|Strategy]]
 
